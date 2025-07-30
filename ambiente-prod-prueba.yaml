@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: atales-production-area
+  name: atales-prod-area
   namespace: argocd
 spec:
   project: default
