@@ -11,7 +11,7 @@ spec:
     path: overlays/dev                  #es el directorio donde esta deployment.yaml en la carpeta k8s de github
   destination:
     server: https://kubernetes.default.svc
-    namespace: ambiente-dev-prueba #el nombre del namespace que va a crear dentro del cluster
+    namespace: ambiente-atales-dev #el nombre del namespace que va a crear dentro del cluster
   syncPolicy:
     automated:
       prune: true

@@ -11,7 +11,7 @@ spec:
     path: overlays/prod                   #es el directorio donde esta deployment.yaml en la carpeta k8s de github
   destination:
     server: https://kubernetes.default.svc
-    namespace: ambiente-prod-prueba #el nombre del namespace que va a crear dentro del cluster
+    namespace: ambiente-atales-prod #el nombre del namespace que va a crear dentro del cluster
   syncPolicy:
     automated:
       prune: true
