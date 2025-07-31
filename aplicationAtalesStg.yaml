@@ -1,20 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: atales-dev-area
+  name: atales-stg-area
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/RocioMagnoni/atales-k8s-node.git
-    targetRevision: main      #rama principal donde estan los archivos
-    path: overlays/dev                  #es el directorio donde esta deployment.yaml en la carpeta k8s de github
+    targetRevision: dev-v1     #rama principal donde estan los archivos
+    path: overlays/stg                  #es el directorio donde esta deployment.yaml en la carpeta k8s de github
   destination:
     server: https://kubernetes.default.svc
-    namespace: ambiente-dev-prueba #el nombre del namespace que va a crear dentro del cluster
+    namespace: ambiente-stg-prueba #el nombre del namespace que va a crear dentro del cluster
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
