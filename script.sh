@@ -41,12 +41,22 @@ else
   echo -e "${GREEN}✅ Sealed Secrets ya está instalado${NC}"
 fi
 
+# Restaurar clave privada si existe
+if [ -f sealed-secrets-private-key.yaml ]; then
+  echo -e "${YELLOW}🛡️ Restaurando clave privada de Sealed Secrets desde backup...${NC}"
+  kubectl apply -f sealed-secrets-private-key.yaml -n kube-system
+  echo -e "${GREEN}✅ Clave privada restaurada${NC}"
+fi
+
 echo -e "${BLUE}⏳ Esperando que Sealed Secrets esté listo...${NC}"
 kubectl wait --for=condition=Ready pod -l name=sealed-secrets-controller -n kube-system --timeout=180s
 
-# 4. Aplicar Sealed Secret (archivo sealed secret, que debe estar en la misma carpeta)
-SEALED_SECRET_FILE="secret.yaml"
+# 4. Crear namespace necesario
+echo -e "${BLUE}\n🟢 Creando namespace ambiente-atales-dev si no existe...${NC}"
+kubectl create namespace ambiente-atales-dev || true
 
+# 5. Aplicar Sealed Secret
+SEALED_SECRET_FILE="secret.yaml"
 if [ -f "$SEALED_SECRET_FILE" ]; then
   echo -e "${BLUE}\n🔐 Aplicando Sealed Secret desde $SEALED_SECRET_FILE ...${NC}"
   kubectl apply -f "$SEALED_SECRET_FILE"
@@ -56,7 +66,7 @@ else
   exit 1
 fi
 
-# 5. Instalar kubeseal CLI si no está instalado
+# 6. Instalar kubeseal CLI si no está instalado
 echo -e "${BLUE}\n🛠️ Verificando instalación de kubeseal CLI...${NC}"
 if ! command -v kubeseal &> /dev/null; then
   echo -e "${YELLOW}🟡 Instalando kubeseal CLI...${NC}"
@@ -78,7 +88,7 @@ else
   echo -e "${GREEN}✅ kubeseal ya está instalado${NC}"
 fi
 
-# 6. Instalar Argo CD
+# 7. Instalar Argo CD
 echo -e "${BLUE}\n🛠️ Verificando instalación de Argo CD...${NC}"
 if ! kubectl get ns argocd > /dev/null 2>&1; then
   kubectl create namespace argocd
@@ -90,7 +100,7 @@ fi
 echo -e "${BLUE}⏳ Esperando que ArgoCD esté listo...${NC}"
 kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd > /dev/null 2>&1
 
-# 7. Aplicar aplicaciones Argo CD (carpeta argo-apps)
+# 8. Aplicar aplicaciones Argo CD
 echo -e "${BLUE}\n🚀 Aplicando aplicaciones Argo CD...${NC}"
 APP_DIR="argo-apps"
 for file in "$APP_DIR"/*.yaml; do
@@ -100,19 +110,19 @@ for file in "$APP_DIR"/*.yaml; do
   fi
 done
 
-# 8. Habilitar port-forward Argo CD
+# 9. Habilitar port-forward Argo CD
 echo -e "${YELLOW}\n🚪 Habilitando acceso local a Argo CD en https://localhost:8080 ...${NC}"
 pkill -f "kubectl port-forward.*argocd-server" 2>/dev/null || true
 sleep 2
 kubectl port-forward svc/argocd-server -n argocd 8080:443 > /dev/null 2>&1 &
 
-# 9. Mostrar contraseña Argo CD
+# 10. Mostrar contraseña Argo CD
 echo -e "${GREEN}\n🔑 Contraseña inicial ArgoCD (usuario admin):${NC}"
 kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d
 echo -e "\n"
 
-# 10. Mensaje final
+# 11. Mensaje final
 echo -e "${GREEN}✅ CLÚSTER LISTO\n"
 echo -e "${YELLOW}🔗 ArgoCD: https://localhost:8080"
 echo -e "${YELLOW}👤 Usuario: admin"
