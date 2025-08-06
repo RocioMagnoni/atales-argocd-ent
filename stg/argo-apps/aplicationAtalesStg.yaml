@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/RocioMagnoni/atales-k8s-node.git
-    targetRevision: dev-v2     #rama principal donde estan los archivos
+    repoURL: https://github.com/RocioMagnoni/atales-k8s-cloud.git
+    targetRevision: main     #rama principal donde estan los archivos
     path: overlays/stg                  #es el directorio donde esta deployment.yaml en la carpeta k8s de github
   destination:
     server: https://kubernetes.default.svc
@@ -18,4 +18,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
 
