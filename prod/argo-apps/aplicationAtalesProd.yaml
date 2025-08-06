@@ -7,16 +7,20 @@ spec:
   project: default
   source:
     repoURL: https://github.com/RocioMagnoni/atales-k8s-cloud.git
-    targetRevision: main     #rama principal donde estan los archivos
-    path: overlays/prod                   #es el directorio donde esta deployment.yaml en la carpeta k8s de github
+    targetRevision: main     # rama principal donde están los archivos
+    path: overlays/prod      # es el directorio donde está deployment.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: ambiente-atales-prod #el nombre del namespace que va a crear dentro del cluster
+    namespace: ambiente-atales-prod # el nombre del namespace que va a crear dentro del cluster
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-   
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
 
